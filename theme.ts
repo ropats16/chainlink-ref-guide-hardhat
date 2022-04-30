@@ -8,7 +8,7 @@ const customTheme = extendTheme({
     body: 'Inter, sans-serif',
   },
   styles: {
-    global: (props) => ({
+    global: (props: any) => ({
       body: {
         color: mode('gray.700', 'whiteAlpha.900')(props),
         '.deleted': {
