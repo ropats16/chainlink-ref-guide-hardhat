@@ -1,6 +1,5 @@
 import Head from 'next/head'
-import {Box, Divider} from '@chakra-ui/react'
-import Header from './src/components/header'
+import {Flex, Heading, Box, Divider} from '@chakra-ui/react'
 import styles from '../styles/Home.module.css'
 
 <Head>
@@ -12,7 +11,9 @@ import styles from '../styles/Home.module.css'
 
 <div className={styles.container}>
   <Box>
-    <Header />
+    <Flex bg='black' color='white' m='0' p='8' align='center' justifyContent='center'>
+            <Heading as='h1' size='2xl'>Chainlink Reference Guide (Hardhat Version)</Heading>
+    </Flex>
     <Box mx="auto" my="3em" maxW="120ch" >
 
       **Note: Use [chainlink-hardhat-test](https://github.com/ropats16/chainlink-hardhat-test) as a reference
