@@ -33,8 +33,8 @@ import styles from '../styles/Home.module.css'
 
       #### Why use Hardhat over Remix?
 
-      For professional development, we must write tests to test and code and scripts that help deploy and run the code.
-      Hardhat gives us these capabilities out of the box.Additonally, working it Remix on large projects and downloading 
+      For professional development, we must write tests to check the code and scripts that help deploy and run the code.
+      Hardhat gives us these capabilities out of the box. Additonally, working with Remix on large projects and downloading 
       the repos is a complex process.
 
       ### Installing Hardhat
@@ -42,7 +42,7 @@ import styles from '../styles/Home.module.css'
       **Note: The following steps are only for projects that do not have native hardhat support.
         Project repos like [https://www.create-web3.xyz/](https://www.create-web3.xyz/) come with Hardhat out of the box.**
 
-      To install hardhat package in your project, run the following in your terminal:
+      To install the hardhat package in your project, run the following in your terminal:
 
       ```shell
       #For an npm project:
@@ -54,7 +54,8 @@ import styles from '../styles/Home.module.css'
       
       **Note: If you are running a mono repo setup, create a folder named `hardhat` and run the command above in that folder.**
 
-      Now run the following in the terminal for setting up a barebones hardhat project and select the basic project option. Select yes for adding the `.gitignore` and 
+      Now run the following in the terminal for setting up a barebones hardhat project and select the basic project option.
+      Select yes for adding the `.gitignore` and 
       additional dependencies:
 
       ```shell
@@ -65,7 +66,7 @@ import styles from '../styles/Home.module.css'
 
       We can re-run the command above to see the tasks Hardhat is capable of performing.
 
-      If you see a harhdat message similar to the following, copy it and run it in the terminal. 
+      If you see a hardhat message similar to the following, copy it and run it in the terminal. 
       You may have to run the command in batches if your terminal does not paste the full list of
       dependencies in one go:
 
@@ -78,9 +79,12 @@ import styles from '../styles/Home.module.css'
       Out of the box, Hardhat gives us a bunch of files and folders of which the following are most important:
 
         - `contracts` : All your smart contracts go here.
-        - `scripts` : Scripts to run and interact with your contract are housed here. Sometimes this folder is named `deploy` in custom projects.
-        - `test` : We must right robust test to thoroughly check our contracts. And you guessed it! Thoses tests go here.
-        - `hardhat.config.json` : Cornerstone for hardhat. For running any scripts, this config is important.
+        - `scripts` : Scripts to run and interact with your contract are housed here.
+        Sometimes this folder is named `deploy` in custom projects or a separate folder named
+        `deploy` is created to work with the `hardhat-deploy` package.
+        - `test` : We must write robust tests to thoroughly check our contracts. And you guessed it! Those tests go here.
+        - `hardhat.config.json` : Cornerstone for hardhat. For running any scripts, this config is important. It defines
+        things like what network to deploy contract and in what configuration.
 
       ### Working with Hardhat
 
@@ -155,7 +159,7 @@ import styles from '../styles/Home.module.css'
 
       #### The Script
 
-      The general formats for scripts is:
+      The general format for standalone (that are run individually) scripts is:
       * import and require statements
       * the main function
       * invoking the main function
@@ -220,8 +224,8 @@ import styles from '../styles/Home.module.css'
 
       Blockchains are deterministic and cannot connect to the outside world natively 
       in order to maintain transparency and decentralisation. They need to have **oracles** 
-      (middleware) to and from the rest of the world. Since decentralisation is at the core 
-      of blockchains, having centralised oracles destroys the purpose. 
+      (middleware) to communicate data and computations to and from the rest of the world.
+      Since decentralisation is at the core of blockchains, having centralised oracles destroys the purpose. 
       
       [**Chainlink**](https://chain.link/) is a decetralised oracle.
 
@@ -277,6 +281,8 @@ import styles from '../styles/Home.module.css'
       operators can set the price to whatever they want.
 
       ### Example: Getting a Random Number using Chainlink VRF
+
+      We will deploy this contract and fetch data from it on the localhost or the rinkeby testnet.
 
       **Note: Please make sure you havesome Rinkeby testnet ETH and LINK to work with.** 
       
@@ -402,7 +408,7 @@ import styles from '../styles/Home.module.css'
       ```
 
       Since we are importing contracts from chainlink, make sure you run the following
-      in the terminal to have access to the chainlink contracts package.
+      in the terminal to have access to the `@chainlink/contracts` package.
 
       ```shell
       npx i @chainlink/contracts
@@ -481,8 +487,9 @@ import styles from '../styles/Home.module.css'
       };
       ```
 
-      Create a `.env` file in the main folder and add the `RINKEBY_RPC_URL`, wallet (use test wallet)
-      `PRIVATE_KEY` and `VRF_SUBSCRIPTION_ID` (from earlier) in it.
+      Create a `.env` file in the main folder and add the `RINKEBY_RPC_URL`, wallet (use test wallet
+      that have been configured with the [Subscription Manager](https://vrf.chain.link/)) `PRIVATE_KEY`
+      and `VRF_SUBSCRIPTION_ID` (from earlier) in it.
 
       As said earlier, we will configure it for the Hardhat local network and the Rinkeby network.
 
@@ -540,6 +547,7 @@ import styles from '../styles/Home.module.css'
           const chainId = network.config.chainId
 
           // chainId for localhost
+          // runs only if we deploy to localhost
           if (chainId == 31337) {
 
               // deploy mock link token
@@ -577,6 +585,7 @@ import styles from '../styles/Home.module.css'
           // if we are working with local networks we wont have 
           // the vrfCoordinator and linktoken
           // we need to configure it for the local network separately in that case
+          // runs if we deploy to local host
           if ( chainId === 31337 ) {
               log("if")
               // make a fake chainlink vrf node
@@ -596,6 +605,8 @@ import styles from '../styles/Home.module.css'
               subscriptionId = txReceipt.events[0].args.subId
               // // now we fund it with fake tokens for mocking
               await vrfCoordinatorV2Mock.fundSubscription(subscriptionId, FUND_AMOUNT)
+          
+          // else statement runs if we deploy to rinkeby
           } else {
               log("else")
               // use real chainlink vrf node
@@ -627,7 +638,7 @@ import styles from '../styles/Home.module.css'
           const networkName = network.name == "hardhat" ? "localhost" : network.name
           log(
               // yarn hardhat request-random-number is a task
-              // head to the next section before running the task
+              // read the next section named "tasks" before running the task
               `yarn hardhat request-random-number --contract ${randomNumberConsumerV2.address} --network ${networkName}`
           )
           log("----------------------------------------------------")
@@ -637,7 +648,7 @@ import styles from '../styles/Home.module.css'
       module.exports.tags =["all"]
       ```
 
-      If you're working with the localhost, run this:
+      If you're working with the localhost, run this before running the next command:
 
       ```shell
       npx hardhat node
@@ -655,6 +666,11 @@ import styles from '../styles/Home.module.css'
       #or
       yarn hardhat deploy
       ```
+
+      Once our contract is deployed, copy the contract address, head over to the
+      [Subscription Manager](https://vrf.chain.link/), select Add consumer and paste wallet address.
+      This will create a connection between your Subscription and deployed contract to fund
+      your request easliy and automatically.
 
       #### Creating and Running Tasks
 
